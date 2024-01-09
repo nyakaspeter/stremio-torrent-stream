@@ -1,0 +1,17 @@
+services:
+  stremio-addon-server:
+    container_name: stremio-addon-server
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+      DEFAULT_JACKETT_URL: http://jackett:9117
+    ports:
+      - 58827:58827
+    restart: unless-stopped
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: jackett
+    ports:
+      - 9117:9117
+    restart: unless-stopped

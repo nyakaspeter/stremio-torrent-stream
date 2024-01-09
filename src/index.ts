@@ -11,7 +11,11 @@ const manifest: Stremio.Manifest = {
   resources: ["stream"],
   types: ["movie", "series"],
   name: "Jackett Stream",
-  description: "Stream torrents from Jackett",
+  description:
+    "With this addon you can stream torrents from Jackett to Stremio. First you need to set up torrent trackers in Jackett using it's Web UI. Then fill the form below and hit the Install button.",
+  logo: "https://webtorrent.io/img/webtorrent-small.png",
+  background:
+    "https://i.etsystatic.com/35367581/r/il/53bf97/4463935832/il_fullxfull.4463935832_3k3g.jpg",
   idPrefixes: ["tt"],
   behaviorHints: {
     configurable: true,
@@ -21,7 +25,7 @@ const manifest: Stremio.Manifest = {
     {
       key: "jackettUrl",
       type: "text",
-      default: "http://localhost:9117",
+      default: process.env.DEFAULT_JACKETT_URL || "http://localhost:9117",
       title: "Jackett API URL",
       required: true,
     },
