@@ -3,13 +3,6 @@ import mime from "mime";
 export const isVideoFile = (filename: string) =>
   mime.getType(filename)?.startsWith("video") || false;
 
-export const getStreamingMimeType = (filename: string) => {
-  const mimeType = mime.getType(filename);
-  return mimeType?.startsWith("video")
-    ? "video/mp4"
-    : mimeType || "application/unknown";
-};
-
 export const isEpisodeNumberMatch = (
   title: string,
   season: string,
@@ -121,4 +114,11 @@ export const getReadableSize = (bytes: number) => {
   return (
     (bytes / Math.pow(1024, e)).toFixed(2) + " " + " KMGTP".charAt(e) + "B"
   );
+};
+
+export const getStreamingMimeType = (filename: string) => {
+  const mimeType = mime.getType(filename);
+  return mimeType?.startsWith("video")
+    ? "video/mp4"
+    : mimeType || "application/unknown";
 };

@@ -1,0 +1,48 @@
+diff --git a/src/builder.js b/src/builder.js
+index 55f32d13d7f610aac4609a7e62dffc916794fb90..f74567b316cdd8a7e212d5231db86e97e64e1314 100644
+--- a/src/builder.js
++++ b/src/builder.js
+@@ -79,7 +79,7 @@ function AddonBuilder(manifest) {
+ 
+ function AddonInterface(manifest, handlers) {
+ 	this.manifest = Object.freeze(Object.assign({}, manifest))
+-	this.get = (resource, type, id, extra = {}, config = {}) => {
++	this.get = (resource, type, id, extra = {}, config = {}, req) => {
+ 		const handler = handlers[resource]
+ 		if (!handler) {
+ 			return Promise.reject({
+@@ -87,7 +87,7 @@ function AddonInterface(manifest, handlers) {
+ 				noHandler: true
+ 			})
+ 		}
+-		return handler({ type, id, extra, config })
++		return handler({ type, id, extra, config, req })
+ 	}
+ 	return this
+ }
+diff --git a/src/getRouter.js b/src/getRouter.js
+index 4c6269d65c851203811dab877cd8543238653378..c18f2f1c5f32703aa3ae22ea4388174b2c485337 100644
+--- a/src/getRouter.js
++++ b/src/getRouter.js
+@@ -61,7 +61,7 @@ function getRouter({ manifest , get }) {
+ 			}
+ 		}
+ 		res.setHeader('Content-Type', 'application/json; charset=utf-8')
+-		get(resource, type, id, extra, config)
++		get(resource, type, id, extra, config, req)
+ 			.then(resp => {
+ 
+ 				let cacheHeaders = {
+diff --git a/src/serveHTTP.js b/src/serveHTTP.js
+index db94ae3ef5874162bf4573ffa6372901c636a483..3bdcb8fbf3c007c73e08007bb50895d6fb6afc5a 100644
+--- a/src/serveHTTP.js
++++ b/src/serveHTTP.js
+@@ -63,7 +63,7 @@ function serveHTTP(addonInterface, opts = {}) {
+ 			if (process.argv.includes('--install')) {
+ 				opn(url.replace('http://', 'stremio://'))
+ 			}
+-			resolve({ url, server })
++			resolve({ url, server, app })
+ 		})
+ 		server.on('error', reject)
+ 	})

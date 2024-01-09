@@ -12,16 +12,15 @@ export interface JackettResult {
   magnet?: string;
 }
 
-const JACKETT_ADDRESS = process.env.JACKETT_ADDRESS || "http://localhost:9117";
-const JACKETT_KEY = process.env.JACKETT_KEY || "";
-
-const client = new JackettApi(JACKETT_ADDRESS, JACKETT_KEY);
-
 export const search = async (
   imdbId: string,
-  categories: JackettCategory[]
+  categories: JackettCategory[],
+  jackettUrl: string,
+  jackettKey: string
 ): Promise<JackettResult[]> => {
   try {
+    const client = new JackettApi(jackettUrl, jackettKey);
+
     const res = await client.search({
       query: imdbId,
       category: categories,
@@ -38,7 +37,7 @@ export const search = async (
       magnet: result.MagnetUri || undefined,
     }));
   } catch (error) {
-    console.error(error);
+    console.error(`Error: ${error}`);
     return [];
   }
 };

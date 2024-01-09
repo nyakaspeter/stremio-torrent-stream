@@ -4,13 +4,18 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@types/stremio-addon-sdk@1.6.10':
+    hash: cox5zdvhj27rporxwusimgyaf4
+    path: patches/@types__stremio-addon-sdk@1.6.10.patch
+  stremio-addon-sdk@1.6.10:
+    hash: xcgmsjozgxjv4klokmgzyhzzyq
+    path: patches/stremio-addon-sdk@1.6.10.patch
+
 dependencies:
   cron:
     specifier: ^3.1.6
     version: 3.1.6
-  dotenv:
-    specifier: ^16.3.1
-    version: 16.3.1
   express:
     specifier: ^4.18.2
     version: 4.18.2
@@ -22,7 +27,7 @@ dependencies:
     version: 4.0.1
   stremio-addon-sdk:
     specifier: ^1.6.10
-    version: 1.6.10
+    version: 1.6.10(patch_hash=xcgmsjozgxjv4klokmgzyhzzyq)
   ts-jackett-api:
     specifier: ^1.0.0
     version: 1.0.0
@@ -39,7 +44,7 @@ devDependencies:
     version: 20.10.6
   '@types/stremio-addon-sdk':
     specifier: ^1.6.10
-    version: 1.6.10
+    version: 1.6.10(patch_hash=cox5zdvhj27rporxwusimgyaf4)
   '@types/webtorrent':
     specifier: ^0.109.7
     version: 0.109.7
@@ -422,9 +427,10 @@ packages:
       '@types/node': 20.10.6
     dev: true
 
-  /@types/stremio-addon-sdk@1.6.10:
+  /@types/stremio-addon-sdk@1.6.10(patch_hash=cox5zdvhj27rporxwusimgyaf4):
     resolution: {integrity: sha512-HHi7ushphr5gmKWS+MA1/LEUQpMxAs7h/OSm4MOjvzCxLy33Soa5u3Th8MpMJryPv9oJZb8JL4Bg5JkSh48uIg==}
     dev: true
+    patched: true
 
   /@types/webtorrent@0.109.7:
     resolution: {integrity: sha512-iDcZkXUMjWOtPpxAWXivs6rpYD++8w4vYJVqGJQKxZh1YxIXm5P3CyHGX735nJ6kFOFXLxD1O0ys/msI1nhRug==}
@@ -851,11 +857,6 @@ packages:
   /destroy@1.2.0:
     resolution: {integrity: sha512-2sJGJTaXIIaR1w4iJSNoN0hnMY7Gpc/n8D4qSCJw8QqFWXf7cuAgnEHxBpweaVcPevC2l3KpjYCx3NypQQgaJg==}
     engines: {node: '>= 0.8', npm: 1.2.8000 || >= 1.4.16}
-    dev: false
-
-  /dotenv@16.3.1:
-    resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
-    engines: {node: '>=12'}
     dev: false
 
   /ee-first@1.1.1:
@@ -1868,7 +1869,7 @@ packages:
       semver: 5.7.2
     dev: false
 
-  /stremio-addon-sdk@1.6.10:
+  /stremio-addon-sdk@1.6.10(patch_hash=xcgmsjozgxjv4klokmgzyhzzyq):
     resolution: {integrity: sha512-+U/lDGv73JPZa7OOy8eMb+SkUFhnHuZGBRXuKNeXcz706oDdwC/sQe9r8Wxw2A7Cw05+f/CQIJSl4zIcmKBkGg==}
     hasBin: true
     dependencies:
@@ -1885,6 +1886,7 @@ packages:
       - encoding
       - supports-color
     dev: false
+    patched: true
 
   /string-width@2.1.1:
     resolution: {integrity: sha512-nOqH59deCq9SRHlxq1Aw85Jnt4w6KvLKqWVik6oA9ZklXLNIOlqg4F2yrT1MVaTjAqvVwdfeZ7w7aCvJD7ugkw==}

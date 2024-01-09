@@ -1,7 +1,10 @@
-import WebTorrent, { Torrent } from "webtorrent";
 import { CronJob } from "cron";
+import WebTorrent, { Torrent } from "webtorrent";
+import fs from "fs";
 // @ts-ignore
 import MemoryStore from "memory-chunk-store";
+import os from "os";
+import path from "path";
 
 interface TorrentInfo {
   name: string;
@@ -13,6 +16,14 @@ interface TorrentInfo {
     size: number;
   }[];
 }
+
+const TORRENT_STORAGE_DIR =
+  process.env.TORRENT_STORAGE_DIR || path.join(os.tmpdir(), "jackett-stream");
+
+const KEEP_DOWNLOADED_FILES = Boolean(process.env.KEEP_FILES) || false;
+
+if (fs.existsSync(TORRENT_STORAGE_DIR) && !KEEP_DOWNLOADED_FILES)
+  fs.rmSync(TORRENT_STORAGE_DIR, { recursive: true });
 
 const infoClient = new WebTorrent();
 const streamClient = new WebTorrent();
@@ -34,7 +45,10 @@ export const getOrAddTorrent = (uri: string) =>
   new Promise<Torrent | undefined>((resolve) => {
     const torrent = streamClient.add(
       uri,
-      { destroyStoreOnDestroy: true },
+      {
+        path: TORRENT_STORAGE_DIR,
+        destroyStoreOnDestroy: !KEEP_DOWNLOADED_FILES,
+      },
       (torrent) => {
         clearTimeout(timeout);
         resolve(torrent);

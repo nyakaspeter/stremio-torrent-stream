@@ -1,30 +1,56 @@
+import { Handler, Request } from "express";
 import Stremio from "stremio-addon-sdk";
 import { JackettCategory } from "ts-jackett-api/lib/types/JackettCategory.js";
 import { JackettResult, search } from "./jackett.js";
 import {
   getReadableSize,
+  getStreamingMimeType,
   guessLanguage,
   guessQuality,
   isEpisodeNumberMatch,
   isVideoFile,
 } from "./utils.js";
-import { getTorrentInfo } from "./webtorrent.js";
+import {
+  getFile,
+  getOrAddTorrent,
+  getTorrentInfo,
+  updateAccessTime,
+} from "./webtorrent.js";
 
-interface HandlerArgs {
+interface StremioHandlerArgs {
   type: string;
   id: string;
+  req: Request;
+  config?: {
+    jackettUrl: string;
+    jackettKey: string;
+  };
 }
 
-export const streamHandler = async ({ type, id }: HandlerArgs) => {
+export const stremioStreamHandler = async ({
+  type,
+  id,
+  req,
+  config,
+}: StremioHandlerArgs) => {
+  const baseUrl = `${req.protocol}://${req.get("host")}`;
+  const jackettUrl = config?.jackettUrl || "";
+  const jackettKey = config?.jackettKey || "";
+
   let streamsWithScores: { stream: Stremio.Stream; score: number }[] = [];
 
   if (type === "movie") {
-    const torrents = await search(id, [JackettCategory.Movies]);
+    const torrents = await search(
+      id,
+      [JackettCategory.Movies],
+      jackettUrl,
+      jackettKey
+    );
     torrents.filter((torrent) => !torrent.category?.includes("DVD"));
     torrents.filter((torrent) => torrent.seeds > 0);
 
     streamsWithScores = (
-      await Promise.all(torrents.map((torrent) => getStreams(torrent)))
+      await Promise.all(torrents.map((torrent) => getStreams(torrent, baseUrl)))
     ).flat();
   }
 
@@ -33,13 +59,18 @@ export const streamHandler = async ({ type, id }: HandlerArgs) => {
     const season = id.split(":")[1];
     const episode = id.split(":")[2];
 
-    const torrents = await search(imdb, [JackettCategory.TV]);
+    const torrents = await search(
+      imdb,
+      [JackettCategory.TV],
+      jackettUrl,
+      jackettKey
+    );
     torrents.filter((torrent) => !torrent.category?.includes("DVD"));
     torrents.filter((torrent) => torrent.seeds > 0);
 
     streamsWithScores = (
       await Promise.all(
-        torrents.map((torrent) => getStreams(torrent, season, episode))
+        torrents.map((torrent) => getStreams(torrent, baseUrl, season, episode))
       )
     ).flat();
   }
@@ -51,8 +82,9 @@ export const streamHandler = async ({ type, id }: HandlerArgs) => {
   return { streams: streamsWithScores.map((stream) => stream.stream) };
 };
 
-const getStreams = async (
+export const getStreams = async (
   torrent: JackettResult,
+  baseUrl: string,
   season?: string,
   episode?: string
 ): Promise<{ stream: Stremio.Stream; score: number }[]> => {
@@ -97,7 +129,7 @@ const getStreams = async (
       [`🔊 ${language}`, `⚙️ ${torrent.tracker}`].join(" "),
     ].join("\n");
 
-    const endpoint = "http://localhost:8000/stream";
+    const endpoint = `${baseUrl}/stream`;
 
     const url = [
       endpoint,
@@ -125,4 +157,40 @@ const getStreams = async (
       score,
     };
   });
+};
+
+export const videoStreamHandler: Handler = async (req, res) => {
+  const { torrentUri, filePath } = req.params;
+
+  const torrent = await getOrAddTorrent(torrentUri);
+  if (!torrent) return res.status(500).send("Failed to add torrent");
+
+  updateAccessTime(torrent.infoHash);
+
+  const file = getFile(torrent, filePath);
+  if (!file) return res.status(404).send("File not found");
+
+  let { range } = req.headers;
+  if (!range) range = "bytes=0-";
+
+  const positions = range.replace(/bytes=/, "").split("-");
+  const start = Number(positions[0]);
+  const end = Math.min(start + torrent.pieceLength, file.length - 1);
+
+  const headers = {
+    "Content-Range": `bytes ${start}-${end}/${file.length}`,
+    "Accept-Ranges": "bytes",
+    "Content-Length": end - start + 1,
+    "Content-Type": getStreamingMimeType(file.name),
+  };
+
+  res.writeHead(206, headers);
+
+  try {
+    const videoStream = file.createReadStream({ start, end });
+    videoStream.on("error", () => {});
+    videoStream.pipe(res);
+  } catch (error) {
+    res.status(500).end();
+  }
 };

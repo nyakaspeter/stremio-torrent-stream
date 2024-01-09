@@ -1,9 +1,9 @@
-import "dotenv/config";
+import { Application } from "express";
 import Stremio from "stremio-addon-sdk";
-import { streamHandler } from "./stream-handler.js";
-import "./stream-server.js";
+import { stremioStreamHandler, videoStreamHandler } from "./handlers.js";
 
-// Docs: https://github.com/Stremio/stremio-addon-sdk/blob/master/docs/api/responses/manifest.md
+const PORT = Number(process.env.PORT) || 58827;
+
 const manifest: Stremio.Manifest = {
   id: "community.jackett-stream",
   version: "0.0.1",
@@ -13,16 +13,34 @@ const manifest: Stremio.Manifest = {
   name: "Jackett Stream",
   description: "Stream torrents from Jackett",
   idPrefixes: ["tt"],
+  behaviorHints: {
+    configurable: true,
+    configurationRequired: true,
+  },
+  config: [
+    {
+      key: "jackettUrl",
+      type: "text",
+      default: "http://localhost:9117",
+      title: "Jackett API URL",
+      required: true,
+    },
+    {
+      key: "jackettKey",
+      type: "text",
+      default: "paste your api key here",
+      title: "Jackett API Key",
+      required: true,
+    },
+  ],
 };
 
 const builder = new Stremio.addonBuilder(manifest);
+builder.defineStreamHandler(stremioStreamHandler);
 
-builder.defineStreamHandler(streamHandler);
+const { app }: { app: Application } = await Stremio.serveHTTP(
+  builder.getInterface(),
+  { port: PORT }
+);
 
-Stremio.serveHTTP(builder.getInterface(), {
-  port: Number(process.env.ADDON_PORT) || 58827,
-});
-
-// when you've deployed your addon, un-comment this line
-// publishToCentral("https://my-addon.awesome/manifest.json")
-// for more information on deploying, see: https://github.com/Stremio/stremio-addon-sdk/blob/master/docs/deploying/README.md
+app.get("/stream/:torrentUri/:filePath", videoStreamHandler);
