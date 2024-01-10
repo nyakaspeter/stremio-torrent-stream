@@ -1,6 +1,5 @@
-import { Application } from "express";
 import Stremio from "stremio-addon-sdk";
-import { stremioStreamHandler, videoStreamHandler } from "./handlers.js";
+import { streamHandler } from "./handler.js";
 
 const PORT = Number(process.env.PORT) || 58827;
 
@@ -12,39 +11,42 @@ const manifest: Stremio.Manifest = {
   types: ["movie", "series"],
   name: "Jackett Stream",
   description:
-    "With this addon you can stream torrents from Jackett to Stremio. First you need to set up torrent trackers in Jackett using it's Web UI. Then fill the form below and hit the Install button.",
-  logo: "https://webtorrent.io/img/webtorrent-small.png",
-  background:
-    "https://i.etsystatic.com/35367581/r/il/53bf97/4463935832/il_fullxfull.4463935832_3k3g.jpg",
+    "This addon can enable Stremio to stream movies and series from torrents returned by a Jackett API. To make it work you'll need to set up torrent trackers in Jackett using it's Web UI and run a Torrent stream server.",
   idPrefixes: ["tt"],
   behaviorHints: {
+    // @ts-ignore
     configurable: true,
     configurationRequired: true,
   },
   config: [
     {
+      title: "Jackett API URL",
       key: "jackettUrl",
       type: "text",
-      default: process.env.DEFAULT_JACKETT_URL || "http://localhost:9117",
-      title: "Jackett API URL",
       required: true,
+      default: "http://localhost:9117",
     },
     {
+      title: "Jackett API Key",
       key: "jackettKey",
       type: "text",
-      default: "paste your api key here",
-      title: "Jackett API Key",
       required: true,
+      default: "paste your api key here",
+    },
+    {
+      title: "Stream server URL",
+      key: "streamServerUrl",
+      type: "text",
+      required: true,
+      default: "http://localhost:8000",
     },
   ],
 };
 
 const builder = new Stremio.addonBuilder(manifest);
-builder.defineStreamHandler(stremioStreamHandler);
 
-const { app }: { app: Application } = await Stremio.serveHTTP(
-  builder.getInterface(),
-  { port: PORT }
-);
+builder.defineStreamHandler(streamHandler);
 
-app.get("/stream/:torrentUri/:filePath", videoStreamHandler);
+const addonInterface = builder.getInterface();
+
+Stremio.serveHTTP(addonInterface, { port: PORT });

@@ -98,7 +98,7 @@ export const guessQuality = (title: string) => {
 
   if (str.includes("3d")) {
     parts.push("3D");
-    score -= 500;
+    score -= 1;
   }
 
   if (parts.length === 0) parts.push("Unknown");
@@ -114,11 +114,4 @@ export const getReadableSize = (bytes: number) => {
   return (
     (bytes / Math.pow(1024, e)).toFixed(2) + " " + " KMGTP".charAt(e) + "B"
   );
-};
-
-export const getStreamingMimeType = (filename: string) => {
-  const mimeType = mime.getType(filename);
-  return mimeType?.startsWith("video")
-    ? "video/mp4"
-    : mimeType || "application/unknown";
 };

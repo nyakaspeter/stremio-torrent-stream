@@ -12,11 +12,11 @@ export interface JackettResult {
   magnet?: string;
 }
 
-export const search = async (
-  imdbId: string,
-  categories: JackettCategory[],
+export const searchJackett = async (
   jackettUrl: string,
-  jackettKey: string
+  jackettKey: string,
+  imdbId: string,
+  categories: JackettCategory[]
 ): Promise<JackettResult[]> => {
   try {
     const client = new JackettApi(jackettUrl, jackettKey);
@@ -37,7 +37,6 @@ export const search = async (
       magnet: result.MagnetUri || undefined,
     }));
   } catch (error) {
-    console.error(`Error: ${error}`);
     return [];
   }
 };

@@ -1,14 +1,18 @@
 services:
   stremio-addon-server:
+    image: nyakaspeter/stremio-jackett-stream:latest
     container_name: stremio-addon-server
-    build:
-      context: .
-    environment:
-      NODE_ENV: production
-      DEFAULT_JACKETT_URL: http://jackett:9117
     ports:
       - 58827:58827
     restart: unless-stopped
+
+  torrent-stream-server:
+    image: nyakaspeter/torrent-stream-server:latest
+    container_name: torrent-stream-server
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+
   jackett:
     image: lscr.io/linuxserver/jackett:latest
     container_name: jackett
