@@ -72,8 +72,8 @@ export const streamHandler = async ({ type, id, config }: HandlerArgs) => {
     if (config.disable4k === "on" && quality.includes("4K")) return false;
 
     if (
-      (config.disableHdr === "on" && quality.includes("HDR")) ||
-      quality.includes("Dolby Vision")
+      config.disableHdr === "on" &&
+      (quality.includes("HDR") || quality.includes("Dolby Vision"))
     )
       return false;
 
