@@ -1,6 +1,5 @@
 import axios from "axios";
 import Stremio from "stremio-addon-sdk";
-import { JackettResult } from "./jackett.js";
 import {
   getReadableSize,
   guessLanguage,
@@ -9,7 +8,31 @@ import {
   isVideoFile,
 } from "./utils.js";
 
-interface TorrentInfo {
+export type TorrentCategory = "movie" | "show";
+
+export type TorrentSource = "jackett";
+
+export interface TorrentSearchOptions {
+  categories?: TorrentCategory[];
+  sources?: TorrentSource[];
+  jackett?: {
+    url?: string;
+    apiKey?: string;
+  };
+}
+
+export interface TorrentSearchResult {
+  name: string;
+  tracker: string;
+  category?: string;
+  size?: number;
+  seeds?: number;
+  peers?: number;
+  torrent?: string;
+  magnet?: string;
+}
+
+export interface TorrentInfo {
   name: string;
   infoHash: string;
   size: number;
@@ -19,6 +42,23 @@ interface TorrentInfo {
     size: number;
   }[];
 }
+
+export const searchTorrents = async (
+  streamServerUrl: string,
+  query: string,
+  options: TorrentSearchOptions
+) => {
+  try {
+    return (
+      await axios.post<TorrentSearchResult[]>(
+        `${streamServerUrl}/torrents/${encodeURIComponent(query)}`,
+        options
+      )
+    ).data;
+  } catch {
+    return [];
+  }
+};
 
 const getTorrentInfo = async (streamServerUrl: string, uri: string) => {
   try {
@@ -34,7 +74,7 @@ const getTorrentInfo = async (streamServerUrl: string, uri: string) => {
 
 export const getStreams = async (
   streamServerUrl: string,
-  torrent: JackettResult,
+  torrent: TorrentSearchResult,
   season?: string,
   episode?: string
 ): Promise<{ stream: Stremio.Stream; score: number }[]> => {

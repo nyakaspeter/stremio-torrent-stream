@@ -4,17 +4,17 @@ import { streamHandler } from "./handler.js";
 const PORT = Number(process.env.PORT) || 58827;
 
 const manifest: Stremio.Manifest = {
-  id: "community.jackett-stream",
+  id: "community.torrent-stream",
   version: "0.0.1",
   catalogs: [],
   resources: ["stream"],
   types: ["movie", "series"],
-  name: "Jackett Stream",
-  logo: "https://user-images.githubusercontent.com/27040483/28728094-99f3e3f6-73c7-11e7-8f8d-28912dc6ac0d.png",
+  name: "Torrent Stream",
+  logo: "https://upload.wikimedia.org/wikipedia/en/7/79/WebTorrent_logo.png",
   background:
     "https://i.etsystatic.com/35367581/r/il/53bf97/4463935832/il_fullxfull.4463935832_3k3g.jpg",
   description:
-    "This addon can enable Stremio to stream movies and series from torrents returned by a Jackett API. To make it work you'll need to set up torrent trackers in Jackett using it's Web UI and run a Torrent stream server.",
+    "This addon enables Stremio to stream movies and shows from a Torrent Stream Server",
   idPrefixes: ["tt"],
   behaviorHints: {
     // @ts-ignore
@@ -23,25 +23,54 @@ const manifest: Stremio.Manifest = {
   },
   config: [
     {
-      title: "Jackett API URL",
-      key: "jackettUrl",
-      type: "text",
-      required: true,
-      default: "http://localhost:9117",
-    },
-    {
-      title: "Jackett API Key",
-      key: "jackettKey",
-      type: "text",
-      required: true,
-      default: "paste your api key here",
-    },
-    {
       title: "Stream server URL",
       key: "streamServerUrl",
       type: "text",
       required: true,
       default: "http://localhost:8000",
+    },
+    {
+      title: "Enable Jackett search",
+      key: "enableJackett",
+      type: "checkbox",
+      default: "checked",
+    },
+    {
+      title: "Jackett API URL",
+      key: "jackettUrl",
+      type: "text",
+      default: "http://localhost:9117",
+    },
+    {
+      title: "Jackett API Key",
+      key: "jackettKey",
+      type: "password",
+    },
+    {
+      title: "Use titles for torrent search",
+      key: "searchByTitle",
+      type: "checkbox",
+    },
+    {
+      title: "Do not show HDR results",
+      key: "disableHdr",
+      type: "checkbox",
+    },
+    {
+      title: "Do not show HEVC results",
+      key: "disableHevc",
+      type: "checkbox",
+    },
+    {
+      title: "Do not show 4K results",
+      key: "disable4k",
+      type: "checkbox",
+    },
+    {
+      title: "Do not show 3D results",
+      key: "disable3d",
+      type: "checkbox",
+      default: "checked",
     },
   ],
 };

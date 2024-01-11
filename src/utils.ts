@@ -1,7 +1,21 @@
+import axios from "axios";
 import mime from "mime";
+import { TorrentSearchResult } from "./torrents.js";
 
 export const isVideoFile = (filename: string) =>
   mime.getType(filename)?.startsWith("video") || false;
+
+export const isSeasonNumberMatch = (title: string, season: string) => {
+  const lowerTitle = title.toLowerCase();
+
+  return (
+    lowerTitle.includes(`s${season.padStart(2, "0")}`) ||
+    lowerTitle.includes(`${season}x`) ||
+    lowerTitle.includes(`s${season.padStart(2, "0")}-`) ||
+    lowerTitle.includes(`-s${season.padStart(2, "0")}`) ||
+    lowerTitle.includes("complete")
+  );
+};
 
 export const isEpisodeNumberMatch = (
   title: string,
@@ -13,12 +27,41 @@ export const isEpisodeNumberMatch = (
   return (
     lowerTitle.includes(
       `s${season.padStart(2, "0")}e${episode.padStart(2, "0")}`
-    ) ||
-    lowerTitle.includes(`${season}x${episode.padStart(2, "0")}`) ||
-    lowerTitle.includes(`s${season.padStart(2, "0")}-`) ||
-    lowerTitle.includes(`-s${season.padStart(2, "0")}`) ||
-    lowerTitle.includes("complete")
+    ) || lowerTitle.includes(`${season}x${episode.padStart(2, "0")}`)
   );
+};
+
+export const getTitle = async (imdbId: string, language?: string) => {
+  try {
+    const data = (
+      await axios.get(`https://www.imdb.com/title/${imdbId}`, {
+        headers: {
+          "Accept-Language": language,
+          "Accept-Encoding": "gzip,deflate,compress",
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+        },
+      })
+    ).data;
+
+    const title = data.match(/<title>(.*?)<\/title>/)[1] as string;
+    if (!title) return undefined;
+    return title.split(" (")[0];
+  } catch {
+    return undefined;
+  }
+};
+
+export const getTitles = async (imdbId: string, language?: string) => {
+  const titles = new Set<string>();
+
+  (await Promise.all([getTitle(imdbId), getTitle(imdbId, "en")])).forEach(
+    (title) => {
+      if (title) titles.add(title);
+    }
+  );
+
+  return [...titles];
 };
 
 export const guessLanguage = (title: string) => {
@@ -114,4 +157,12 @@ export const getReadableSize = (bytes: number) => {
   return (
     (bytes / Math.pow(1024, e)).toFixed(2) + " " + " KMGTP".charAt(e) + "B"
   );
+};
+
+export const dedupeTorrents = (torrents: TorrentSearchResult[]) => {
+  const map = new Map(
+    torrents.map((torrent) => [`${torrent.tracker}:${torrent.name}`, torrent])
+  );
+
+  return [...map.values()];
 };

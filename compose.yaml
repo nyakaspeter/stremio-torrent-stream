@@ -1,6 +1,6 @@
 services:
   stremio-addon-server:
-    image: nyakaspeter/stremio-jackett-stream:latest
+    image: nyakaspeter/stremio-torrent-stream:latest
     container_name: stremio-addon-server
     ports:
       - 58827:58827

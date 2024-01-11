@@ -1,5 +1,5 @@
 {
-  "name": "stremio-jackett-stream",
+  "name": "stremio-torrent-stream",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -21,7 +21,6 @@
   "dependencies": {
     "axios": "^1.6.5",
     "mime": "^4.0.1",
-    "stremio-addon-sdk": "^1.6.10",
-    "ts-jackett-api": "^1.0.0"
+    "stremio-addon-sdk": "^1.6.10"
   }
 }

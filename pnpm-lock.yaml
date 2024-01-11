@@ -14,9 +14,6 @@ dependencies:
   stremio-addon-sdk:
     specifier: ^1.6.10
     version: 1.6.10
-  ts-jackett-api:
-    specifier: ^1.0.0
-    version: 1.0.0
 
 devDependencies:
   '@types/node':
@@ -1063,11 +1060,6 @@ packages:
 
   /tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
-    dev: false
-
-  /ts-jackett-api@1.0.0:
-    resolution: {integrity: sha512-ggOHRxrjNvEwOUWary2BdroRDZnTpvKV0UP/5rwCckbRWyZ57OyiqsRXRDaYVdJh+HjEdQ7g8XlXUX+oPNPM7w==}
-    engines: {node: '>=12.0'}
     dev: false
 
   /tslib@1.14.1:
