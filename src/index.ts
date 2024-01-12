@@ -30,10 +30,25 @@ const manifest: Stremio.Manifest = {
       default: "http://localhost:8000",
     },
     {
+      title: "Enable nCore search",
+      key: "enableNcore",
+      type: "checkbox",
+      default: "checked",
+    },
+    {
+      title: "nCore username",
+      key: "nCoreUser",
+      type: "text",
+    },
+    {
+      title: "nCore password",
+      key: "nCorePassword",
+      type: "password",
+    },
+    {
       title: "Enable Jackett search",
       key: "enableJackett",
       type: "checkbox",
-      default: "checked",
     },
     {
       title: "Jackett API URL",

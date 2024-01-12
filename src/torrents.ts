@@ -4,17 +4,21 @@ import {
   getReadableSize,
   guessLanguage,
   guessQuality,
-  isEpisodeNumberMatch,
+  isFileNameMatch,
   isVideoFile,
 } from "./utils.js";
 
 export type TorrentCategory = "movie" | "show";
 
-export type TorrentSource = "jackett";
+export type TorrentSource = "jackett" | "ncore";
 
 export interface TorrentSearchOptions {
   categories?: TorrentCategory[];
   sources?: TorrentSource[];
+  ncore?: {
+    user?: string;
+    password?: string;
+  };
   jackett?: {
     url?: string;
     apiKey?: string;
@@ -77,7 +81,15 @@ export const getStreams = async (
   torrent: TorrentSearchResult,
   season?: string,
   episode?: string
-): Promise<{ stream: Stremio.Stream; score: number }[]> => {
+): Promise<
+  {
+    stream: Stremio.Stream;
+    torrentName: string;
+    fileName: string;
+    quality: string;
+    score: number;
+  }[]
+> => {
   const uri = torrent.torrent || torrent.magnet;
   if (!uri) return [];
 
@@ -88,7 +100,7 @@ export const getStreams = async (
 
   if (season && episode) {
     videos = videos.filter((file) =>
-      isEpisodeNumberMatch(file.name, season, episode)
+      isFileNameMatch(file.name, Number(season), Number(episode))
     );
   }
 
@@ -105,10 +117,15 @@ export const getStreams = async (
       file.name.toLowerCase().endsWith(".vtt")
   );
 
-  const { quality, score } = guessQuality(torrent.name);
-  const language = guessLanguage(torrent.name);
+  const torrentQuality = guessQuality(torrent.name);
+  const language = guessLanguage(torrent);
 
   return videos.map((file) => {
+    const fileQuality = guessQuality(file.name);
+
+    const { quality, score } =
+      fileQuality.score > torrentQuality.score ? fileQuality : torrentQuality;
+
     const description = [
       ...(season && episode ? [torrent.name, file.name] : [torrent.name]),
       [
@@ -144,6 +161,9 @@ export const getStreams = async (
         url,
         subtitles,
       },
+      torrentName: torrent.name,
+      fileName: file.name,
+      quality,
       score,
     };
   });

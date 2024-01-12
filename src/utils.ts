@@ -5,30 +5,31 @@ import { TorrentSearchResult } from "./torrents.js";
 export const isVideoFile = (filename: string) =>
   mime.getType(filename)?.startsWith("video") || false;
 
-export const isSeasonNumberMatch = (title: string, season: string) => {
-  const lowerTitle = title.toLowerCase();
-
-  return (
-    lowerTitle.includes(`s${season.padStart(2, "0")}`) ||
-    lowerTitle.includes(`${season}x`) ||
-    lowerTitle.includes(`s${season.padStart(2, "0")}-`) ||
-    lowerTitle.includes(`-s${season.padStart(2, "0")}`) ||
-    lowerTitle.includes("complete")
-  );
+export const isTorrentNameMatch = (
+  name: string,
+  season: number,
+  episode: number
+) => {
+  const guess = guessSeasonEpisode(name);
+  if (guess.completeSeries) return true;
+  if (guess.seasons?.includes(season)) return true;
+  if (guess.season === season && guess.episode === episode) return true;
+  if (season === 0) {
+    if (name.toLowerCase().includes("special")) return true;
+    if (guess.season === undefined && guess.seasons === undefined) return true;
+  }
+  return false;
 };
 
-export const isEpisodeNumberMatch = (
-  title: string,
-  season: string,
-  episode: string
+export const isFileNameMatch = (
+  name: string,
+  season: number,
+  episode: number
 ) => {
-  const lowerTitle = title.toLowerCase();
-
-  return (
-    lowerTitle.includes(
-      `s${season.padStart(2, "0")}e${episode.padStart(2, "0")}`
-    ) || lowerTitle.includes(`${season}x${episode.padStart(2, "0")}`)
-  );
+  const guess = guessSeasonEpisode(name);
+  if (guess.season === season && guess.episode === episode) return true;
+  if (season === 0) return true;
+  return false;
 };
 
 export const getTitle = async (imdbId: string, language?: string) => {
@@ -64,8 +65,40 @@ export const getTitles = async (imdbId: string, language?: string) => {
   return [...titles];
 };
 
-export const guessLanguage = (title: string) => {
-  const split = title
+export const guessSeasonEpisode = (name: string) => {
+  const str = name.replace(/\W/g, " ").toLowerCase();
+
+  const seasonMatch = [...str.matchAll(/[s](?<season>\d+)/g)];
+  const episodeMatch = str.match(/[e](?<episode>\d+)/);
+
+  if (seasonMatch.length === 0 && str.includes("complete")) {
+    return { completeSeries: true };
+  } else if (seasonMatch.length === 1 && !episodeMatch) {
+    const season = Number(seasonMatch[0].groups?.season) || 0;
+    return { seasons: [season] };
+  } else if (seasonMatch.length > 1) {
+    const firstSeason = Number(seasonMatch[0].groups?.season) || 0;
+    const lastSeason =
+      Number(seasonMatch[seasonMatch.length - 1].groups?.season) || 0;
+    const seasons = [];
+    for (let i = firstSeason; i <= lastSeason; i++) seasons.push(i);
+    return { seasons };
+  } else if (seasonMatch[0] || episodeMatch) {
+    const season = Number(seasonMatch[0]?.groups?.season) || undefined;
+    const episode = Number(episodeMatch?.groups?.episode) || undefined;
+    return { season, episode };
+  } else {
+    const seasonEpisodeMatch = str.match(/(?<season>\d+)x(?<episode>\d+)/);
+    const season = Number(seasonEpisodeMatch?.groups?.season) || undefined;
+    const episode = Number(seasonEpisodeMatch?.groups?.episode) || undefined;
+    return { season, episode };
+  }
+};
+
+export const guessLanguage = (torrent: TorrentSearchResult) => {
+  if (torrent.category?.includes("HU")) return "Hungarian";
+
+  const split = torrent.name
     .toLowerCase()
     .replace(/\W/g, " ")
     .replace("x", " ")
@@ -79,8 +112,8 @@ export const guessLanguage = (title: string) => {
   return "English";
 };
 
-export const guessQuality = (title: string) => {
-  const str = title.replace(/\W/g, " ").toLowerCase();
+export const guessQuality = (name: string) => {
+  const str = name.replace(/\W/g, " ").toLowerCase();
 
   let score = 0;
   const parts = [];
