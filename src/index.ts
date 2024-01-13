@@ -1,3 +1,5 @@
+import axios from "axios";
+import localtunnel from "localtunnel";
 import Stremio from "stremio-addon-sdk";
 import { streamHandler } from "./handler.js";
 
@@ -14,7 +16,7 @@ const manifest: Stremio.Manifest = {
   background:
     "https://i.etsystatic.com/35367581/r/il/53bf97/4463935832/il_fullxfull.4463935832_3k3g.jpg",
   description:
-    "This addon enables Stremio to stream movies and shows from a <a href='https://github.com/nyakaspeter/torrent-stream-server' target='_blank'>Torrent Stream Server</a>",
+    "This addon enables Stremio to stream movies and shows from a Torrent Stream Server",
   idPrefixes: ["tt"],
   behaviorHints: {
     // @ts-ignore
@@ -27,7 +29,7 @@ const manifest: Stremio.Manifest = {
       key: "streamServerUrl",
       type: "text",
       required: true,
-      default: "http://localhost:8000",
+      default: "http://192.168.0.10:8000",
     },
     {
       title: "Enable iTorrent search",
@@ -44,7 +46,7 @@ const manifest: Stremio.Manifest = {
       title: "Jackett API URL",
       key: "jackettUrl",
       type: "text",
-      default: "http://localhost:9117",
+      default: "http://192.168.0.10:9117",
     },
     {
       title: "Jackett API Key",
@@ -107,4 +109,13 @@ builder.defineStreamHandler(streamHandler);
 
 const addonInterface = builder.getInterface();
 
-Stremio.serveHTTP(addonInterface, { port: PORT });
+await Stremio.serveHTTP(addonInterface, { port: PORT });
+
+const tunnel = await localtunnel({ port: PORT });
+
+console.log(`HTTPS addon accessible at: ${tunnel.url}`);
+
+const tunnelPassword = (await axios.get("https://loca.lt/mytunnelpassword"))
+  .data;
+
+console.log(`Tunnel password: ${tunnelPassword}`);

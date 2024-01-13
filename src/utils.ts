@@ -1,6 +1,5 @@
 import axios from "axios";
 import mime from "mime";
-import { TorrentSearchResult } from "./torrents.js";
 
 export const isVideoFile = (filename: string) =>
   mime.getType(filename)?.startsWith("video") || false;
@@ -53,7 +52,7 @@ export const getTitle = async (imdbId: string, language?: string) => {
   }
 };
 
-export const getTitles = async (imdbId: string, language?: string) => {
+export const getTitles = async (imdbId: string) => {
   const titles = new Set<string>();
 
   (await Promise.all([getTitle(imdbId), getTitle(imdbId, "en")])).forEach(
@@ -95,10 +94,10 @@ export const guessSeasonEpisode = (name: string) => {
   }
 };
 
-export const guessLanguage = (torrent: TorrentSearchResult) => {
-  if (torrent.category?.includes("HU")) return "Hungarian";
+export const guessLanguage = (name: string, category?: string) => {
+  if (category?.includes("HU")) return "Hungarian";
 
-  const split = torrent.name
+  const split = name
     .toLowerCase()
     .replace(/\W/g, " ")
     .replace("x", " ")
@@ -204,12 +203,4 @@ export const getReadableSize = (bytes: number) => {
   return (
     (bytes / Math.pow(1024, e)).toFixed(2) + " " + " KMGTP".charAt(e) + "B"
   );
-};
-
-export const dedupeTorrents = (torrents: TorrentSearchResult[]) => {
-  const map = new Map(
-    torrents.map((torrent) => [`${torrent.tracker}:${torrent.name}`, torrent])
-  );
-
-  return [...map.values()];
 };

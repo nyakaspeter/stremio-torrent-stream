@@ -118,7 +118,7 @@ export const getStreams = async (
   );
 
   const torrentQuality = guessQuality(torrent.name);
-  const language = guessLanguage(torrent);
+  const language = guessLanguage(torrent.name, torrent.category);
 
   return videos.map((file) => {
     const fileQuality = guessQuality(file.name);

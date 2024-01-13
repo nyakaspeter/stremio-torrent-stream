@@ -5,12 +5,7 @@ import {
   getStreams,
   searchTorrents,
 } from "./torrents.js";
-import {
-  dedupeTorrents,
-  getTitles,
-  guessQuality,
-  isTorrentNameMatch,
-} from "./utils.js";
+import { getTitles, guessQuality, isTorrentNameMatch } from "./utils.js";
 
 interface HandlerArgs {
   type: string;
@@ -135,4 +130,12 @@ const isAllowedFormat = (config: HandlerArgs["config"], name: string) => {
   }
 
   return true;
+};
+
+const dedupeTorrents = (torrents: TorrentSearchResult[]) => {
+  const map = new Map(
+    torrents.map((torrent) => [`${torrent.tracker}:${torrent.name}`, torrent])
+  );
+
+  return [...map.values()];
 };
