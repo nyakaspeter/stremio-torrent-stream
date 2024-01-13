@@ -10,7 +10,7 @@ import {
 
 export type TorrentCategory = "movie" | "show";
 
-export type TorrentSource = "jackett" | "ncore";
+export type TorrentSource = "jackett" | "ncore" | "itorrent";
 
 export interface TorrentSearchOptions {
   categories?: TorrentCategory[];

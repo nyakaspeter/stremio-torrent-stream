@@ -14,7 +14,7 @@ const manifest: Stremio.Manifest = {
   background:
     "https://i.etsystatic.com/35367581/r/il/53bf97/4463935832/il_fullxfull.4463935832_3k3g.jpg",
   description:
-    "This addon enables Stremio to stream movies and shows from a Torrent Stream Server",
+    "This addon enables Stremio to stream movies and shows from a <a href='https://github.com/nyakaspeter/torrent-stream-server' target='_blank'>Torrent Stream Server</a>",
   idPrefixes: ["tt"],
   behaviorHints: {
     // @ts-ignore
@@ -30,20 +30,10 @@ const manifest: Stremio.Manifest = {
       default: "http://localhost:8000",
     },
     {
-      title: "Enable nCore search",
-      key: "enableNcore",
+      title: "Enable iTorrent search",
+      key: "enableItorrent",
       type: "checkbox",
       default: "checked",
-    },
-    {
-      title: "nCore username",
-      key: "nCoreUser",
-      type: "text",
-    },
-    {
-      title: "nCore password",
-      key: "nCorePassword",
-      type: "password",
     },
     {
       title: "Enable Jackett search",
@@ -59,6 +49,21 @@ const manifest: Stremio.Manifest = {
     {
       title: "Jackett API Key",
       key: "jackettKey",
+      type: "password",
+    },
+    {
+      title: "Enable nCore search",
+      key: "enableNcore",
+      type: "checkbox",
+    },
+    {
+      title: "nCore username",
+      key: "nCoreUser",
+      type: "text",
+    },
+    {
+      title: "nCore password",
+      key: "nCorePassword",
       type: "password",
     },
     {
@@ -80,6 +85,12 @@ const manifest: Stremio.Manifest = {
       title: "Do not show 4K results",
       key: "disable4k",
       type: "checkbox",
+    },
+    {
+      title: "Do not show CAM results",
+      key: "disableCam",
+      type: "checkbox",
+      default: "checked",
     },
     {
       title: "Do not show 3D results",

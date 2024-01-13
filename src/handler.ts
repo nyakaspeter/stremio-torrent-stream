@@ -23,10 +23,12 @@ interface HandlerArgs {
     enableJackett: string;
     jackettUrl: string;
     jackettKey: string;
+    enableItorrent: string;
     searchByTitle: string;
     disableHdr: string;
     disableHevc: string;
     disable4k: string;
+    disableCam: string;
     disable3d: string;
   };
 }
@@ -41,8 +43,9 @@ export const streamHandler = async ({ type, id, config }: HandlerArgs) => {
   if (type === "series") categories.push("show");
 
   const sources: TorrentSource[] = [];
-  if (config.enableNcore === "on") sources.push("ncore");
   if (config.enableJackett === "on") sources.push("jackett");
+  if (config.enableNcore === "on") sources.push("ncore");
+  if (config.enableItorrent === "on") sources.push("itorrent");
 
   const [imdbId, season, episode] = id.split(":");
 
@@ -110,6 +113,8 @@ export const streamHandler = async ({ type, id, config }: HandlerArgs) => {
 
 const isAllowedQuality = (config: HandlerArgs["config"], quality: string) => {
   if (config?.disable4k === "on" && quality.includes("4K")) return false;
+
+  if (config?.disableCam === "on" && quality.includes("CAM")) return false;
 
   if (
     config?.disableHdr === "on" &&
