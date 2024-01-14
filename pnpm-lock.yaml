@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  stremio-addon-sdk@1.6.10:
+    hash: 7mgafdhakfxzubsybkn4dxeyc4
+    path: patches/stremio-addon-sdk@1.6.10.patch
+
 dependencies:
   axios:
     specifier: ^1.6.5
@@ -16,7 +21,7 @@ dependencies:
     version: 4.0.1
   stremio-addon-sdk:
     specifier: ^1.6.10
-    version: 1.6.10
+    version: 1.6.10(patch_hash=7mgafdhakfxzubsybkn4dxeyc4)
 
 devDependencies:
   '@types/localtunnel':
@@ -1105,7 +1110,7 @@ packages:
       semver: 5.7.2
     dev: false
 
-  /stremio-addon-sdk@1.6.10:
+  /stremio-addon-sdk@1.6.10(patch_hash=7mgafdhakfxzubsybkn4dxeyc4):
     resolution: {integrity: sha512-+U/lDGv73JPZa7OOy8eMb+SkUFhnHuZGBRXuKNeXcz706oDdwC/sQe9r8Wxw2A7Cw05+f/CQIJSl4zIcmKBkGg==}
     hasBin: true
     dependencies:
@@ -1122,6 +1127,7 @@ packages:
       - encoding
       - supports-color
     dev: false
+    patched: true
 
   /string-width@2.1.1:
     resolution: {integrity: sha512-nOqH59deCq9SRHlxq1Aw85Jnt4w6KvLKqWVik6oA9ZklXLNIOlqg4F2yrT1MVaTjAqvVwdfeZ7w7aCvJD7ugkw==}

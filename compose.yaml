@@ -4,6 +4,7 @@ services:
     container_name: stremio-addon-server
     ports:
       - 58827:58827
+      - 58828:58828
     restart: unless-stopped
 
   torrent-stream-server:

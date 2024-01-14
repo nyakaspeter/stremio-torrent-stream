@@ -24,5 +24,10 @@
     "localtunnel": "^2.0.2",
     "mime": "^4.0.1",
     "stremio-addon-sdk": "^1.6.10"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "stremio-addon-sdk@1.6.10": "patches/stremio-addon-sdk@1.6.10.patch"
+    }
   }
 }

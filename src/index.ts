@@ -1,9 +1,19 @@
 import axios from "axios";
+import https from "https";
 import localtunnel from "localtunnel";
 import Stremio from "stremio-addon-sdk";
 import { streamHandler } from "./handler.js";
 
 const PORT = Number(process.env.PORT) || 58827;
+const HTTPS_PORT = Number(process.env.HTTPS_PORT) || 58828;
+
+const ENABLE_LOCALIP = process.env.ENABLE_LOCALIP
+  ? process.env.ENABLE_LOCALIP === "true"
+  : true;
+
+const ENABLE_LOCALTUNNEL = process.env.ENABLE_LOCALTUNNEL
+  ? process.env.ENABLE_LOCALTUNNEL === "true"
+  : false;
 
 const manifest: Stremio.Manifest = {
   id: "community.torrent-stream",
@@ -30,12 +40,6 @@ const manifest: Stremio.Manifest = {
       type: "text",
       required: true,
       default: "http://192.168.0.10:8000",
-    },
-    {
-      title: "Enable iTorrent search",
-      key: "enableItorrent",
-      type: "checkbox",
-      default: "checked",
     },
     {
       title: "Enable Jackett search",
@@ -67,6 +71,12 @@ const manifest: Stremio.Manifest = {
       title: "nCore password",
       key: "nCorePassword",
       type: "password",
+    },
+    {
+      title: "Enable iTorrent search",
+      key: "enableItorrent",
+      type: "checkbox",
+      default: "checked",
     },
     {
       title: "Use titles for torrent search",
@@ -109,13 +119,24 @@ builder.defineStreamHandler(streamHandler);
 
 const addonInterface = builder.getInterface();
 
-await Stremio.serveHTTP(addonInterface, { port: PORT });
+// @ts-ignore
+const { app } = await Stremio.serveHTTP(addonInterface, { port: PORT });
+console.log(`HTTP addon listening on port ${PORT}`);
 
-const tunnel = await localtunnel({ port: PORT });
+if (ENABLE_LOCALIP) {
+  const key = (await axios.get("http://local-ip.co/cert/server.key")).data;
+  const serverPem = (await axios.get("http://local-ip.co/cert/server.pem"))
+    .data;
+  const chainPem = (await axios.get("http://local-ip.co/cert/chain.pem")).data;
+  const cert = `${serverPem}\n${chainPem}`;
+  const httpsServer = https.createServer({ key, cert }, app);
+  httpsServer.listen(HTTPS_PORT);
+  console.log(`HTTPS addon listening on port ${HTTPS_PORT}`);
+}
 
-console.log(`HTTPS addon accessible at: ${tunnel.url}`);
-
-const tunnelPassword = (await axios.get("https://loca.lt/mytunnelpassword"))
-  .data;
-
-console.log(`Tunnel password: ${tunnelPassword}`);
+if (ENABLE_LOCALTUNNEL) {
+  const tunnel = await localtunnel({ port: PORT });
+  console.log(`Tunnel accessible at: ${tunnel.url}`);
+  const tunnelPassword = await axios.get("https://loca.lt/mytunnelpassword");
+  console.log(`Tunnel password: ${tunnelPassword.data}`);
+}
