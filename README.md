@@ -35,7 +35,7 @@ HTTPS addon listening on port 58828
 
 On your local computer you can install the addon from http://localhost:58827 but if you want to use it with other devices you'll have install it from an HTTPS site. I've bundled a wildcard certificate from [local-ip.co](http://local-ip.co/) with the server, which will provide valid HTTPS for your local IPs. To find out the HTTPS address of the addon take the LAN IP of the host and replace dots with hyphens, then append **.my.local-ip.co and the HTTPS port at the end**. Let's say the LAN IP of your machine hosting the addon on port **58828** is **192.168.0.10**, in this case you can install the addon from https://192-168-0-10.my.local-ip.co:58828.
 
-If the above doesn't work for you, you can try opening an HTTPS tunnel to the addon server with [localtunnel](https://theboroer.github.io/localtunnel-www/). To do this set the environment value `ENABLE_LOCALTUNNEL=true`. After you start the addon server you'll see this in the console:
+If the above doesn't work for you, you can try opening an HTTPS tunnel to the addon server with [localtunnel](https://theboroer.github.io/localtunnel-www/). To do this set the environment variable `ENABLE_LOCALTUNNEL=true`. After you start the addon server you'll see this in the console:
 ```
 Tunnel accessible at: https://some-random-domain.loca.lt
 Tunnel password: x.xxx.xxx.xx
