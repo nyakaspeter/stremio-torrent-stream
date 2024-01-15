@@ -79,6 +79,18 @@ const manifest: Stremio.Manifest = {
       default: "checked",
     },
     {
+      title: "Enable YTS search",
+      key: "enableYts",
+      type: "checkbox",
+      default: "checked",
+    },
+    {
+      title: "Enable EZTV search",
+      key: "enableEztv",
+      type: "checkbox",
+      default: "checked",
+    },
+    {
       title: "Use titles for torrent search",
       key: "searchByTitle",
       type: "checkbox",

@@ -19,6 +19,8 @@ interface HandlerArgs {
     jackettUrl: string;
     jackettKey: string;
     enableItorrent: string;
+    enableYts: string;
+    enableEztv: string;
     searchByTitle: string;
     disableHdr: string;
     disableHevc: string;
@@ -41,6 +43,8 @@ export const streamHandler = async ({ type, id, config }: HandlerArgs) => {
   if (config.enableJackett === "on") sources.push("jackett");
   if (config.enableNcore === "on") sources.push("ncore");
   if (config.enableItorrent === "on") sources.push("itorrent");
+  if (config.enableYts === "on") sources.push("yts");
+  if (config.enableEztv === "on") sources.push("eztv");
 
   const [imdbId, season, episode] = id.split(":");
 
