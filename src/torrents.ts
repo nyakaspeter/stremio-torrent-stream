@@ -10,18 +10,28 @@ import {
 
 export type TorrentCategory = "movie" | "show";
 
-export type TorrentSource = "jackett" | "ncore" | "itorrent" | "yts" | "eztv";
+export type TorrentSource =
+  | "jackett"
+  | "ncore"
+  | "insane"
+  | "itorrent"
+  | "yts"
+  | "eztv";
 
 export interface TorrentSearchOptions {
   categories?: TorrentCategory[];
   sources?: TorrentSource[];
+  jackett?: {
+    url?: string;
+    apiKey?: string;
+  };
   ncore?: {
     user?: string;
     password?: string;
   };
-  jackett?: {
-    url?: string;
-    apiKey?: string;
+  insane?: {
+    user?: string;
+    password?: string;
   };
 }
 

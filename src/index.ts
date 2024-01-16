@@ -73,6 +73,21 @@ const manifest: Stremio.Manifest = {
       type: "password",
     },
     {
+      title: "Enable iNSANE search",
+      key: "enableInsane",
+      type: "checkbox",
+    },
+    {
+      title: "iNSANE username",
+      key: "insaneUser",
+      type: "text",
+    },
+    {
+      title: "iNSANE password",
+      key: "insanePassword",
+      type: "password",
+    },
+    {
       title: "Enable iTorrent search",
       key: "enableItorrent",
       type: "checkbox",

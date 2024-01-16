@@ -12,12 +12,15 @@ interface HandlerArgs {
   id: string;
   config?: {
     streamServerUrl: string;
-    enableNcore: string;
-    nCoreUser: string;
-    nCorePassword: string;
     enableJackett: string;
     jackettUrl: string;
     jackettKey: string;
+    enableNcore: string;
+    nCoreUser: string;
+    nCorePassword: string;
+    enableInsane: string;
+    insaneUser: string;
+    insanePassword: string;
     enableItorrent: string;
     enableYts: string;
     enableEztv: string;
@@ -42,6 +45,7 @@ export const streamHandler = async ({ type, id, config }: HandlerArgs) => {
   const sources: TorrentSource[] = [];
   if (config.enableJackett === "on") sources.push("jackett");
   if (config.enableNcore === "on") sources.push("ncore");
+  if (config.enableInsane === "on") sources.push("insane");
   if (config.enableItorrent === "on") sources.push("itorrent");
   if (config.enableYts === "on") sources.push("yts");
   if (config.enableEztv === "on") sources.push("eztv");
@@ -57,13 +61,17 @@ export const streamHandler = async ({ type, id, config }: HandlerArgs) => {
         searchTorrents(config.streamServerUrl, query, {
           categories,
           sources,
+          jackett: {
+            url: config.jackettUrl,
+            apiKey: config.jackettKey,
+          },
           ncore: {
             user: config.nCoreUser,
             password: config.nCorePassword,
           },
-          jackett: {
-            url: config.jackettUrl,
-            apiKey: config.jackettKey,
+          insane: {
+            user: config.insaneUser,
+            password: config.insanePassword,
           },
         })
       )
