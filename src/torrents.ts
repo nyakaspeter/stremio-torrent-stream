@@ -5,6 +5,7 @@ import {
   guessLanguage,
   guessQuality,
   isFileNameMatch,
+  isSubtitleFile,
   isVideoFile,
 } from "./utils.js";
 
@@ -120,12 +121,7 @@ export const getStreams = async (
     (file) => file.size > videosSize / (videos.length + 1)
   );
 
-  const subs = torrentInfo.files.filter(
-    (file) =>
-      file.name.toLowerCase().endsWith(".srt") ||
-      file.name.toLowerCase().endsWith(".sub") ||
-      file.name.toLowerCase().endsWith(".vtt")
-  );
+  const subs = torrentInfo.files.filter((file) => isSubtitleFile(file.name));
 
   const torrentQuality = guessQuality(torrent.name);
   const language = guessLanguage(torrent.name, torrent.category);
@@ -170,6 +166,9 @@ export const getStreams = async (
         description,
         url,
         subtitles,
+        behaviorHints: {
+          bingeGroup: torrent.name,
+        },
       },
       torrentName: torrent.name,
       fileName: file.name,

@@ -4,6 +4,15 @@ import mime from "mime";
 export const isVideoFile = (filename: string) =>
   mime.getType(filename)?.startsWith("video") || false;
 
+export const isSubtitleFile = (filename: string) =>
+  filename.toLowerCase().endsWith(".srt") ||
+  filename.toLowerCase().endsWith(".sub") ||
+  filename.toLowerCase().endsWith(".vtt") ||
+  filename.toLowerCase().endsWith(".smi") ||
+  filename.toLowerCase().endsWith(".ssa") ||
+  filename.toLowerCase().endsWith(".ass") ||
+  filename.toLowerCase().endsWith(".txt");
+
 export const isTorrentNameMatch = (
   name: string,
   season: number,
