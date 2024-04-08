@@ -1,5 +1,5 @@
 diff --git a/src/serveHTTP.js b/src/serveHTTP.js
-index db94ae3ef5874162bf4573ffa6372901c636a483..2cdf4bb7a9954118198a838797aae7ab74ae5e94 100644
+index db94ae3ef5874162bf4573ffa6372901c636a483..8b52bf5c6e6007fb39704dcee0875334b7d70462 100644
 --- a/src/serveHTTP.js
 +++ b/src/serveHTTP.js
 @@ -53,7 +53,7 @@ function serveHTTP(addonInterface, opts = {}) {
@@ -7,7 +7,7 @@ index db94ae3ef5874162bf4573ffa6372901c636a483..2cdf4bb7a9954118198a838797aae7ab
  		server.on('listening', function() {
  			const url = `http://127.0.0.1:${server.address().port}/manifest.json`
 -			console.log('HTTP addon accessible at:', url)
-+			//console.log('HTTP addon accessible at:', url)
++			console.log(`HTTP addon listening on port ${server.address().port}`)
  			if (process.argv.includes('--launch')) {
  				const base = 'https://staging.strem.io#'
  				//const base = 'https://app.strem.io/shell-v4.4#'
