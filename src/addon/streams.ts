@@ -1,17 +1,22 @@
+import { Request } from "express";
+import Stremio from "stremio-addon-sdk";
 import {
   TorrentCategory,
   TorrentSearchResult,
   TorrentSource,
-  getStreams,
   searchTorrents,
-} from "./torrents.js";
-import { getTitles, guessQuality, isTorrentNameMatch } from "./utils.js";
+} from "../torrent/search.js";
+import { getTorrentInfo } from "../torrent/webtorrent.js";
+import { getReadableSize, isSubtitleFile, isVideoFile } from "../utils/file.js";
+import { getTitles } from "../utils/imdb.js";
+import { guessLanguage } from "../utils/language.js";
+import { guessQuality } from "../utils/quality.js";
+import { isFileNameMatch, isTorrentNameMatch } from "../utils/shows.js";
 
 interface HandlerArgs {
   type: string;
   id: string;
   config?: {
-    streamServerUrl: string;
     enableJackett: string;
     jackettUrl: string;
     jackettKey: string;
@@ -31,11 +36,10 @@ interface HandlerArgs {
     disableCam: string;
     disable3d: string;
   };
+  req: Request;
 }
 
-export const streamHandler = async ({ type, id, config }: HandlerArgs) => {
-  if (!config?.streamServerUrl) return { streams: [] };
-
+export const streamHandler = async ({ type, id, config, req }: HandlerArgs) => {
   let torrents: TorrentSearchResult[] = [];
 
   const categories: TorrentCategory[] = [];
@@ -58,7 +62,7 @@ export const streamHandler = async ({ type, id, config }: HandlerArgs) => {
   torrents = (
     await Promise.all(
       queries.map((query) =>
-        searchTorrents(config.streamServerUrl, query, {
+        searchTorrents(query, {
           categories,
           sources,
           jackett: {
@@ -100,7 +104,7 @@ export const streamHandler = async ({ type, id, config }: HandlerArgs) => {
   let streams = (
     await Promise.all(
       torrents.map((torrent) =>
-        getStreams(config.streamServerUrl, torrent, season, episode)
+        getStreamsFromTorrent(req, torrent, season, episode)
       )
     )
   ).flat();
@@ -113,9 +117,107 @@ export const streamHandler = async ({ type, id, config }: HandlerArgs) => {
 
   streams.sort((a, b) => b.score - a.score);
 
-  console.log(`🔍 ${streams.length} results for ${id} `);
-
   return { streams: streams.map((stream) => stream.stream) };
+};
+
+const dedupeTorrents = (torrents: TorrentSearchResult[]) => {
+  const map = new Map(
+    torrents.map((torrent) => [`${torrent.tracker}:${torrent.name}`, torrent])
+  );
+
+  return [...map.values()];
+};
+
+export const getStreamsFromTorrent = async (
+  req: Request,
+  torrent: TorrentSearchResult,
+  season?: string,
+  episode?: string
+): Promise<
+  {
+    stream: Stremio.Stream;
+    torrentName: string;
+    fileName: string;
+    quality: string;
+    score: number;
+  }[]
+> => {
+  const uri = torrent.torrent || torrent.magnet;
+  if (!uri) return [];
+
+  const torrentInfo = await getTorrentInfo(uri);
+  if (!torrentInfo) return [];
+
+  let videos = torrentInfo.files.filter((file) => isVideoFile(file.name));
+
+  if (season && episode) {
+    videos = videos.filter((file) =>
+      isFileNameMatch(file.name, Number(season), Number(episode))
+    );
+  }
+
+  const videosSize = videos.reduce((acc, file) => acc + file.size, 0);
+
+  videos = videos.filter(
+    (file) => file.size > videosSize / (videos.length + 1)
+  );
+
+  const subs = torrentInfo.files.filter((file) => isSubtitleFile(file.name));
+
+  const torrentQuality = guessQuality(torrent.name);
+  const language = guessLanguage(torrent.name, torrent.category);
+
+  // @ts-ignore
+  return videos.map((file) => {
+    const fileQuality = guessQuality(file.name);
+
+    const { quality, score } =
+      fileQuality.score > torrentQuality.score ? fileQuality : torrentQuality;
+
+    const description = [
+      ...(season && episode ? [torrent.name, file.name] : [torrent.name]),
+      [
+        `💾 ${getReadableSize(file.size)}`,
+        `⬆️ ${torrent.seeds}`,
+        `⬇️ ${torrent.peers}`,
+      ].join(" "),
+      [`🔊 ${language}`, `⚙️ ${torrent.tracker}`].join(" "),
+    ].join("\n");
+
+    const streamEndpoint = `${req.protocol}://${req.get("host")}/stream`;
+
+    const url = [
+      streamEndpoint,
+      encodeURIComponent(uri),
+      encodeURIComponent(file.path),
+    ].join("/");
+
+    const subtitles = subs.map((sub, index) => ({
+      id: index.toString(),
+      url: [
+        streamEndpoint,
+        encodeURIComponent(uri),
+        encodeURIComponent(sub.path),
+      ].join("/"),
+      lang: sub.name,
+    }));
+
+    return {
+      stream: {
+        name: quality,
+        description,
+        url,
+        subtitles,
+        behaviorHints: {
+          bingeGroup: torrent.name,
+        },
+      },
+      torrentName: torrent.name,
+      fileName: file.name,
+      quality,
+      score,
+    };
+  });
 };
 
 const isAllowedQuality = (config: HandlerArgs["config"], quality: string) => {
@@ -142,12 +244,4 @@ const isAllowedFormat = (config: HandlerArgs["config"], name: string) => {
   }
 
   return true;
-};
-
-const dedupeTorrents = (torrents: TorrentSearchResult[]) => {
-  const map = new Map(
-    torrents.map((torrent) => [`${torrent.tracker}:${torrent.name}`, torrent])
-  );
-
-  return [...map.values()];
 };

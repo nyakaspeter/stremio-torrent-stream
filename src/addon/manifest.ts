@@ -20,14 +20,6 @@ export const manifest: Manifest = {
   },
   config: [
     {
-      title: "Stream server URL",
-      key: "streamServerUrl",
-      type: "text",
-      // @ts-ignore
-      required: true,
-      default: "http://192.168.0.10:8000",
-    },
-    {
       title: "Enable Jackett search",
       key: "enableJackett",
       type: "checkbox",
@@ -36,7 +28,6 @@ export const manifest: Manifest = {
       title: "Jackett API URL",
       key: "jackettUrl",
       type: "text",
-      default: "http://192.168.0.10:9117",
     },
     {
       title: "Jackett API Key",
@@ -47,6 +38,7 @@ export const manifest: Manifest = {
       title: "Enable nCore search",
       key: "enableNcore",
       type: "checkbox",
+      default: "checked",
     },
     {
       title: "nCore username",
@@ -77,19 +69,16 @@ export const manifest: Manifest = {
       title: "Enable iTorrent search",
       key: "enableItorrent",
       type: "checkbox",
-      default: "checked",
     },
     {
       title: "Enable YTS search",
       key: "enableYts",
       type: "checkbox",
-      default: "checked",
     },
     {
       title: "Enable EZTV search",
       key: "enableEztv",
       type: "checkbox",
-      default: "checked",
     },
     {
       title: "Use titles for torrent search",

@@ -4,12 +4,13 @@ import https from "https";
 import localtunnel from "localtunnel";
 
 enum HttpsMethod {
+  None = "none",
   LocalIpMedic = "local-ip.medicmobile.org",
   LocalIpCo = "local-ip.co",
   Localtunnel = "localtunnel",
 }
 
-const HTTPS_METHOD = process.env.HTTPS_METHOD || HttpsMethod.LocalIpMedic;
+const HTTPS_METHOD = process.env.HTTPS_METHOD || HttpsMethod.None;
 
 export const serveHTTPS = async (app: RequestListener, port: number) => {
   if (HTTPS_METHOD === HttpsMethod.LocalIpMedic) {
