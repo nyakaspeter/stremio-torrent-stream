@@ -82,7 +82,7 @@ export const getStats = () => ({
   openStreams: [...openStreams.values()].reduce((a, b) => a + b, 0),
   downloadSpeed: streamClient.downloadSpeed,
   uploadSpeed: streamClient.uploadSpeed,
-  activeTorrents: streamClient.torrents.map((torrent) => ({
+  activeTorrents: streamClient.torrents.map<ActiveTorrentInfo>((torrent) => ({
     name: torrent.name,
     infoHash: torrent.infoHash,
     size: torrent.length,
