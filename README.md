@@ -1,17 +1,10 @@
 # Stremio Torrent Stream
 
-This self-hostable addon enables Stremio to stream movies and shows from a torrents. It works great with both public and private trackers through [Jackett](https://github.com/Jackett/Jackett) and built-in scrapers.
+This self-hostable addon enables [Stremio](https://www.stremio.com/) to stream movies and shows from a torrents. Works with both public and private trackers through [Jackett](https://github.com/Jackett/Jackett) and built-in scrapers. It uses [WebTorrent](https://github.com/webtorrent/webtorrent) under the hood.
+
+![image](https://github.com/nyakaspeter/stremio-torrent-stream/assets/43880678/42040b81-2bf5-43f0-b827-9d62c3a1d79c)
 
 ## How to run
-
-With Node.js and [pnpm](https://pnpm.io/installation):
-```
-git clone https://github.com/nyakaspeter/stremio-torrent-stream.git
-cd stremio-torrent-stream
-pnpm i
-pnpm build
-pnpm start
-```
 
 With Docker:
 ```
@@ -23,6 +16,15 @@ With Docker Compose (the addon and Jackett simultaneously):
 git clone https://github.com/nyakaspeter/stremio-torrent-stream.git
 cd stremio-torrent-stream
 docker compose up
+```
+
+With Node.js and [pnpm](https://pnpm.io/installation):
+```
+git clone https://github.com/nyakaspeter/stremio-torrent-stream.git
+cd stremio-torrent-stream
+pnpm i
+pnpm build
+pnpm start
 ```
 
 Once the addon server is up, you'll see a console output like this:
@@ -48,5 +50,3 @@ On the configuration screen you can set up your torrent site & Jackett credentia
 ![image](https://github.com/nyakaspeter/stremio-torrent-stream/assets/43880678/d9a581a9-8036-44ab-942a-3750261cb50c)
 
 When you're done with the configuration hit the install button at the bottom, that will redirect you to Stremio where you can finally install the addon. If you've configured everything properly you'll see torrent results populating the stream list for movies and shows. Enjoy streaming!
-
-![image](https://github.com/nyakaspeter/torrent-stream-server/assets/43880678/87fbf602-d2c5-4d4f-9e4e-eda21ed58c51)
