@@ -7,13 +7,6 @@ services:
       - 58828:58828
     restart: unless-stopped
 
-  torrent-stream-server:
-    image: nyakaspeter/torrent-stream-server:latest
-    container_name: torrent-stream-server
-    ports:
-      - 8000:8000
-    restart: unless-stopped
-
   jackett:
     image: lscr.io/linuxserver/jackett:latest
     container_name: jackett

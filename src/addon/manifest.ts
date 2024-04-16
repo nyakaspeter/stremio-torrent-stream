@@ -2,7 +2,7 @@ import { Manifest } from "stremio-addon-sdk";
 
 export const manifest: Manifest = {
   id: "community.torrent-stream",
-  version: "0.0.1",
+  version: "1.0.0",
   catalogs: [],
   resources: ["stream"],
   types: ["movie", "series"],
@@ -11,7 +11,7 @@ export const manifest: Manifest = {
   background:
     "https://i.etsystatic.com/35367581/r/il/53bf97/4463935832/il_fullxfull.4463935832_3k3g.jpg",
   description:
-    "This addon enables Stremio to stream movies and shows from a Torrent Stream Server",
+    "This addon enables Stremio to stream movies and shows from torrents",
   idPrefixes: ["tt"],
   behaviorHints: {
     // @ts-ignore
