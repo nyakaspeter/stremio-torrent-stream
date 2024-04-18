@@ -1,3 +1,5 @@
+import "./utils/dotenv.js";
+
 import express from "express";
 import { serveHTTP } from "./addon/server.js";
 import { router } from "./router.js";
