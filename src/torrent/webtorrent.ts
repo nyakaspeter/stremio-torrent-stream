@@ -35,22 +35,32 @@ interface ActiveTorrentInfo extends TorrentInfo {
   files: ActiveFileInfo[];
 }
 
-const TORRENT_STORAGE_DIR =
-  process.env.TORRENT_STORAGE_DIR ||
-  path.join(os.tmpdir(), "torrent-stream-server");
+// Directory to store downloaded files (default OS temp directory)
+const DOWNLOAD_DIR =
+  process.env.DOWNLOAD_DIR || path.join(os.tmpdir(), "torrent-stream-server");
 
-const KEEP_DOWNLOADED_FILES = process.env.KEEP_FILES
-  ? process.env.KEEP_FILES === "true"
+// Keep downloaded files after all streams are closed (default false)
+const KEEP_DOWNLOADED_FILES = process.env.KEEP_DOWNLOADED_FILES
+  ? process.env.KEEP_DOWNLOADED_FILES === "true"
   : false;
 
-if (!KEEP_DOWNLOADED_FILES) fs.emptyDirSync(TORRENT_STORAGE_DIR);
+if (!KEEP_DOWNLOADED_FILES) fs.emptyDirSync(DOWNLOAD_DIR);
 
-const DOWNLOAD_SPEED_LIMIT = Number(process.env.DOWNLOAD_SPEED_LIMIT) || -1;
+// Maximum number of connections per torrent (default 50)
+const MAX_CONNS_PER_TORRENT = Number(process.env.MAX_CONNS_PER_TORRENT) || 50;
 
-const UPLOAD_SPEED_LIMIT = Number(process.env.UPLOAD_SPEED_LIMIT) || -1;
+// Max download speed (bytes/s) over all torrents (default 5MB/s)
+const DOWNLOAD_SPEED_LIMIT =
+  Number(process.env.DOWNLOAD_SPEED_LIMIT) || 5 * 1024 * 1024;
 
-const TORRENT_SEED_TIME = Number(process.env.TORRENT_SEED_TIME) || 60 * 1000;
+// Max upload speed (bytes/s) over all torrents (default 1MB/s)
+const UPLOAD_SPEED_LIMIT =
+  Number(process.env.UPLOAD_SPEED_LIMIT) || 1 * 1024 * 1024;
 
+// Time (ms) to seed torrents after all streams are closed (default 1 minute)
+const SEED_TIME = Number(process.env.SEED_TIME) || 60 * 1000;
+
+// Timeout (ms) when adding torrents if no metadata is received (default 5 seconds)
 const TORRENT_TIMEOUT = Number(process.env.TORRENT_TIMEOUT) || 5 * 1000;
 
 const infoClient = new WebTorrent();
@@ -58,6 +68,7 @@ const streamClient = new WebTorrent({
   // @ts-ignore
   downloadLimit: DOWNLOAD_SPEED_LIMIT,
   uploadLimit: UPLOAD_SPEED_LIMIT,
+  maxConns: MAX_CONNS_PER_TORRENT,
 });
 
 streamClient.on("torrent", (torrent) => {
@@ -108,7 +119,7 @@ export const getOrAddTorrent = (uri: string) =>
     const torrent = streamClient.add(
       uri,
       {
-        path: TORRENT_STORAGE_DIR,
+        path: DOWNLOAD_DIR,
         destroyStoreOnDestroy: !KEEP_DOWNLOADED_FILES,
       },
       (torrent) => {
@@ -194,7 +205,7 @@ export const streamClosed = (hash: string) => {
       console.log(`➖ ${torrent.name}`);
       timeouts.delete(hash);
     });
-  }, TORRENT_SEED_TIME);
+  }, SEED_TIME);
 
   timeouts.set(hash, timeout);
 };
