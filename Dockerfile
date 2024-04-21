@@ -3,7 +3,7 @@ ARG PNPM_VERSION=8.15.4
 ARG TS_VERSION=5.3.3
 
 # Builder stage
-FROM node:${NODE_VERSION}-slim as build
+FROM node:${NODE_VERSION} as build
 
 WORKDIR /usr/src/app
 
