@@ -8,8 +8,10 @@ import { serveHTTPS } from "./utils/https.js";
 const PORT = Number(process.env.PORT) || 58827;
 const HTTPS_PORT = Number(process.env.HTTPS_PORT) || 58828;
 
-const app = await serveHTTP(PORT);
+const main = async () => {
+  const app = await serveHTTP(PORT);
+  app.use(express.json()).use(router);
+  await serveHTTPS(app, HTTPS_PORT);
+};
 
-app.use(express.json()).use(router);
-
-await serveHTTPS(app, HTTPS_PORT);
+main();

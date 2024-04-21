@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { searchTorrents } from "./torrent/search.js";
-import { getStreamingMimeType } from "./utils/file.js";
 import {
   getFile,
   getOrAddTorrent,
@@ -9,6 +8,7 @@ import {
   streamClosed,
   streamOpened,
 } from "./torrent/webtorrent.js";
+import { getStreamingMimeType } from "./utils/file.js";
 
 export const router = Router();
 
@@ -83,10 +83,18 @@ router.get("/stream/:torrentUri/:filePath", async (req, res) => {
       res.status(500).end();
     }, 10000);
 
+    const noReadTimeout = setTimeout(() => {
+      res.status(200).end();
+    }, 60000);
+
     const videoStream = file.createReadStream({ start, end });
 
     videoStream.on("data", () => {
       clearTimeout(noDataTimeout);
+    });
+
+    videoStream.on("readable", () => {
+      noReadTimeout.refresh();
     });
 
     videoStream.on("error", (error) => {});

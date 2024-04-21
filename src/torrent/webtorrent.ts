@@ -49,9 +49,9 @@ if (!KEEP_DOWNLOADED_FILES) fs.emptyDirSync(DOWNLOAD_DIR);
 // Maximum number of connections per torrent (default 50)
 const MAX_CONNS_PER_TORRENT = Number(process.env.MAX_CONNS_PER_TORRENT) || 50;
 
-// Max download speed (bytes/s) over all torrents (default 5MB/s)
+// Max download speed (bytes/s) over all torrents (default 20MB/s)
 const DOWNLOAD_SPEED_LIMIT =
-  Number(process.env.DOWNLOAD_SPEED_LIMIT) || 5 * 1024 * 1024;
+  Number(process.env.DOWNLOAD_SPEED_LIMIT) || 20 * 1024 * 1024;
 
 // Max upload speed (bytes/s) over all torrents (default 1MB/s)
 const UPLOAD_SPEED_LIMIT =
