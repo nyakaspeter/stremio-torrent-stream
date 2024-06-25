@@ -15,7 +15,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+          images: ${{ github.actor }}/${{ github.event.repository.name }}
           flavor: |
             latest=true
           tags: |

@@ -72,7 +72,7 @@ const streamClient = new WebTorrent({
 });
 
 streamClient.on("torrent", (torrent) => {
-  console.log(`➕ ${torrent.name}`);
+  console.log(`Added torrent: ${torrent.name}`);
 });
 
 streamClient.on("error", (error) => {
@@ -158,7 +158,7 @@ export const getTorrentInfo = async (uri: string) => {
       (torrent) => {
         clearTimeout(timeout);
         const info = getInfo(torrent);
-        console.log(`❓ ${info.name}`);
+        console.log(`Fetched info: ${info.name}`);
         torrent.destroy();
         resolve(info);
       }
@@ -174,7 +174,9 @@ export const getTorrentInfo = async (uri: string) => {
 const timeouts = new Map<string, NodeJS.Timeout>();
 const openStreams = new Map<string, number>();
 
-export const streamOpened = (hash: string) => {
+export const streamOpened = (hash: string, fileName: string) => {
+  console.log(`Stream opened: ${fileName}`);
+
   const count = openStreams.get(hash) || 0;
   openStreams.set(hash, count + 1);
 
@@ -186,7 +188,9 @@ export const streamOpened = (hash: string) => {
   }
 };
 
-export const streamClosed = (hash: string) => {
+export const streamClosed = (hash: string, fileName: string) => {
+  console.log(`Stream closed: ${fileName}`);
+
   const count = openStreams.get(hash) || 1;
   openStreams.set(hash, count - 1);
 
@@ -201,7 +205,7 @@ export const streamClosed = (hash: string) => {
     const torrent = await streamClient.get(hash);
     // @ts-ignore
     torrent?.destroy(undefined, () => {
-      console.log(`➖ ${torrent.name}`);
+      console.log(`Removed torrent: ${torrent.name}`);
       timeouts.delete(hash);
     });
   }, SEED_TIME);

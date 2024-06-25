@@ -101,10 +101,10 @@ router.get("/stream/:torrentUri/:filePath", async (req, res) => {
 
     videoStream.pipe(res);
 
-    streamOpened(torrent.infoHash);
+    streamOpened(torrent.infoHash, file.name);
 
     res.on("close", () => {
-      streamClosed(torrent.infoHash);
+      streamClosed(torrent.infoHash, file.name);
     });
   } catch (error) {
     res.status(500).end();

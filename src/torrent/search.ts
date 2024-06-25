@@ -170,7 +170,7 @@ export const searchTorrents = async (
 
   const results = (await Promise.all(promises)).flat();
 
-  console.log(`🔍 ${results.length} results for ${query}`);
+  console.log(`Search: got ${results.length} results for ${query}`);
 
   return results;
 };
