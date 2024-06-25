@@ -121,12 +121,11 @@ export const getOrAddTorrent = (uri: string) =>
       {
         path: DOWNLOAD_DIR,
         destroyStoreOnDestroy: !KEEP_DOWNLOADED_FILES,
+        // @ts-ignore
+        deselect: true,
       },
       (torrent) => {
         clearTimeout(timeout);
-        // this is buggy, commented out for now
-        // torrent.files.forEach((file) => file.deselect());
-        // torrent.deselect(0, torrent.pieces.length - 1, 0);
         resolve(torrent);
       }
     );

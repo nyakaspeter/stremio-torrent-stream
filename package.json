@@ -37,7 +37,7 @@
     "stremio-addon-sdk": "^1.6.10",
     "tough-cookie": "^4.1.3",
     "ts-jackett-api": "^1.0.0",
-    "webtorrent": "^2.2.1",
+    "webtorrent": "^2.4.2",
     "yts-api-node": "^1.1.3"
   },
   "pnpm": {
