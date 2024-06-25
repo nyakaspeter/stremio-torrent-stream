@@ -15,7 +15,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: name/app
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
+          flavor: |
+            latest=true
           tags: |
             type=raw,value={{date 'YYYYMMDD'}}
       - name: Login to Docker Hub
