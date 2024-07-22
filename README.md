@@ -1,6 +1,6 @@
 # Stremio Torrent Stream
 
-This self-hostable addon enables [Stremio](https://www.stremio.com/) to stream movies and shows from a torrents. Works with both public and private trackers through [Jackett](https://github.com/Jackett/Jackett) and built-in scrapers. It uses [WebTorrent](https://github.com/webtorrent/webtorrent) under the hood.
+This self-hostable addon enables [Stremio](https://www.stremio.com/) to stream movies and shows from torrents. Works with both public and private trackers through [Jackett](https://github.com/Jackett/Jackett) and built-in scrapers. It uses [WebTorrent](https://github.com/webtorrent/webtorrent) under the hood.
 
 ![image](https://github.com/nyakaspeter/stremio-torrent-stream/assets/43880678/42040b81-2bf5-43f0-b827-9d62c3a1d79c)
 
