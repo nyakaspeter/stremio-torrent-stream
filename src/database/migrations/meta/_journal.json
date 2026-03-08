@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1757150797227,
+      "tag": "0000_curvy_blue_blade",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1757457179366,
+      "tag": "0001_fuzzy_warlock",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1757490053025,
+      "tag": "0002_flowery_zombie",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1757530503241,
+      "tag": "0003_calm_christian_walker",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+ALTER TABLE `certificates` ADD `expiry` integer NOT NULL;
